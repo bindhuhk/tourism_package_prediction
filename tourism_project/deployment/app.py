@@ -10,7 +10,7 @@ model_path = hf_hub_download(repo_id="hkbindhu/Tourism-Prediction-Model", filena
 # Load the model
 model = joblib.load(model_path)
 
-# Streamlit UI for Customer Churn Prediction
+# Streamlit UI for Tourism Customer UI Prediction
 st.title("Tourism Package Prediction App")
 st.write("The Tourism Package Prediction App is an internal tool for \"Visit with Us\" i.e. a leading travel company management & sales that predicts whether a customer will purchase the newly introduced Wellness Tourism Package before contacting them based on their details.")
 st.write("Kindly enter the customer details to check whether they are likely to Opt In for tourism package.")
@@ -39,9 +39,7 @@ Designation = st.selectbox("Customer's designation in their current organization
 ProductPitched = st.selectbox("The type of product pitched to the customer",["Basic", "Deluxe","Standard","Super Deluxe","King"])
 
 citytier_mapping = {'Tier 1':1,'Tier 2':2,'Tier 3':3}
-                                                                             
-
-                                                                             
+                                                                                                                                                         
 # Convert categorical inputs to match model training
 input_data = pd.DataFrame([{
     'Age': Age,
