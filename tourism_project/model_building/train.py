@@ -34,9 +34,27 @@ ytest = pd.read_csv(ytest_path).squeeze()
 
 # Define numeric features from your dataset columns (adjust as per your dataset)
 numeric_features = [
-    col for col in Xtrain.columns if col != 'Type'
+    'Age',                     
+    'CityTier',                
+    'DurationOfPitch',         
+    'NumberOfPersonVisiting',  
+    'NumberOfFollowups',       
+    'PreferredPropertyStar',   
+    'NumberOfTrips',          
+    'PitchSatisfactionScore', 
+    'NumberOfChildrenVisiting', 
+    'MonthlyIncome',
+    'Passport',   
+    'OwnCar'   
 ]
-categorical_features = ['Type']
+categorical_features = [
+    'TypeofContact',   
+    'Occupation',      
+    'Gender',          
+    'ProductPitched',  
+    'MaritalStatus',   
+    'Designation'      
+]
 
 # Set class weight to handle imbalance
 class_weight = ytrain.value_counts()[0] / ytrain.value_counts()[1]
@@ -52,7 +70,7 @@ xgb_model = xgb.XGBClassifier(scale_pos_weight=class_weight, random_state=42, us
 
 # Hyperparameter grid
 param_grid = {
-    'xgbclassifier__n_estimators': [50, 75, 100],
+    'xgbclassifier__n_estimators': [50, 75, 100, 125, 150],
     'xgbclassifier__max_depth': [2, 3, 4],
     'xgbclassifier__colsample_bytree': [0.4, 0.5, 0.6],
     'xgbclassifier__colsample_bylevel': [0.4, 0.5, 0.6],
@@ -65,6 +83,7 @@ model_pipeline = make_pipeline(preprocessor, xgb_model)
 
 # Start MLflow run
 with mlflow.start_run():
+    mlflow.set_tag("run_id", "run_id")
     # Hyperparameter tuning with cross-validation
     grid_search = GridSearchCV(model_pipeline, param_grid, cv=5, n_jobs=-1)
     grid_search.fit(Xtrain, ytrain)
@@ -118,7 +137,7 @@ with mlflow.start_run():
     print(f"Model saved as artifact at: {model_path}")
 
     # Upload to Hugging Face Hub
-    repo_id = "hkbindhu/Tourism-Package-Model"  # Replace 'user' with your HF username
+    repo_id = "hkbindhu/Tourism-Package-Model"  
     repo_type = "model"
 
     try:
