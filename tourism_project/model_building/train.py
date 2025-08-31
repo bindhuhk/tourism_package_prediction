@@ -29,8 +29,8 @@ ytest_path = "hf://datasets/hkbindhu/Tourism-Package-Prediction/ytest.csv"
 
 Xtrain = pd.read_csv(Xtrain_path)
 Xtest = pd.read_csv(Xtest_path)
-ytrain = pd.read_csv(ytrain_path).squeeze()  # squeeze() to convert dataframe to series if needed
-ytest = pd.read_csv(ytest_path).squeeze()
+ytrain = pd.read_csv(ytrain_path)
+ytest = pd.read_csv(ytest_path)
 
 # Define numeric features from your dataset columns (adjust as per your dataset)
 numeric_features = [
