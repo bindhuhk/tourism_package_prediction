@@ -15,47 +15,51 @@ st.title("Tourism Package Prediction")
 st.write("Fill the customer details below to predict if they'll purchase a travel package")
 
 # Collect user input
-Age = st.slider("Age", 18, 70, 30)
-TypeofContact = st.selectbox("Type of Contact", ["Self Enquiry", "Company Invited"])
-CityTier = st.selectbox("City Tier", [1, 2, 3])
-DurationOfPitch = st.slider("Duration of Pitch (mins)", 0, 100, 15)
-Occupation = st.selectbox("Occupation", ["Salaried", "Small Business", "Large Business", "Free Lancer"])
-Gender = st.selectbox("Gender", ["Male", "Female", "Others"])
-NumberOfPersonVisiting = st.slider("Number of Persons Visiting", 1, 5, 2)
-NumberOfFollowups = st.slider("Number of Follow-ups", 1, 10, 3)
-ProductPitched = st.selectbox("Product Pitched", ["Basic", "Standard", "Deluxe", "Super Deluxe", "King"])
-PreferredPropertyStar = st.selectbox("Preferred Property Star", [1, 2, 3, 4, 5])
-MaritalStatus = st.selectbox("Marital Status", ["Married", "Single", "Divorced", "Unmarried"])
-NumberOfTrips = st.slider("Number of Trips", 1, 20, 3)
-Passport = st.selectbox("Has Passport?", ["Yes", "No"])
-PitchSatisfactionScore = st.slider("Pitch Satisfaction Score", 1, 5, 3)
-OwnCar = st.selectbox("Owns a Car?", ["Yes", "No"])
-NumberOfChildrenVisited = st.slider("Number of Children Visited", 0, 5, 1)
-Designation = st.selectbox("Designation", ["Executive", "Manager", "AVP", "VP", "Sr. Manager"])
-MonthlyIncome = st.number_input("Monthly Income", min_value=1000.0, value=30000.0)
-                                                             
-# ----------------------------
-# Prepare input data
-# ----------------------------
+Age = st.number_input("Age (customer's age in years)", min_value=18.0, max_value=110.0, value=18.0,step=1.0)
+CityTier = st.selectbox("The city category based on development, population, and living standards (Tier 1 > Tier 2 > Tier 3)",
+                        ["Tier 1", "Tier 2", "Tier 3"])
+NumberOfPersonVisiting = st.number_input("Total number of people accompanying the customer on the trip", min_value=0, max_value=30, value=0,step=1)
+PreferredPropertyStar = st.number_input("Preferred hotel rating by the customer",min_value=1.0, max_value=7.0, value=3.0,step=1.0)
+NumberOfTrips = st.number_input("Average number of trips the customer takes annually",min_value=0.0, value=1.0,step=1.0)
+Passport = st.selectbox("Whether the customer holds a valid passport ?",["Yes", "No"])
+OwnCar = st.selectbox("Whether the customer owns a car ?",["Yes", "No"])
+NumberOfChildrenVisiting = st.number_input("Number of children below age 5 accompanying the customer",min_value=0.0, value=0.0,step=1.0)
+MonthlyIncome = st.number_input("Gross monthly income of the customer", min_value=0.0, value=5000.0)
+PitchSatisfactionScore = st.number_input("Score indicating the customer's satisfaction with the sales pitch", min_value=1, value=1,max_value=5,step=1)
+NumberOfFollowups = st.number_input("Total number of follow-ups by the salesperson after the sales pitch.",min_value=0.0, value=1.0,step=1.0)
+DurationOfPitch = st.number_input("Duration of the sales pitch delivered to the customer.",min_value=1.0, value=1.0,step=1.0)
+
+TypeofContact = st.selectbox("The method by which the customer was contacted",["Self Enquiry", "Company Invited"])
+Occupation = st.selectbox("Customer's occupation",["Salaried", "Small Business","Large Business","Free Lancer"])
+Gender = st.selectbox("Gender of the customer",["Male", "Female"])
+MaritalStatus = st.selectbox("Marital status of the customer",["Married", "Divorced","Unmarried","Single"])
+Designation = st.selectbox("Customer's designation in their current organization",["Executive", "Manager","Senior Manager", "AVP","VP"])
+ProductPitched = st.selectbox("The type of product pitched to the customer",["Basic", "Deluxe","Standard","Super Deluxe","King"])
+
+citytier_mapping = {'Tier 1':1,'Tier 2':2,'Tier 3':3}
+                                                                             
+
+                                                                             
+# Convert categorical inputs to match model training
 input_data = pd.DataFrame([{
     'Age': Age,
-    'TypeofContact': TypeofContact,
-    'CityTier': CityTier,
-    'DurationOfPitch': DurationOfPitch,
-    'Occupation': Occupation,
-    'Gender': Gender,
+    'CityTier': citytier_mapping[CityTier],
     'NumberOfPersonVisiting': NumberOfPersonVisiting,
-    'NumberOfFollowups': NumberOfFollowups,
-    'ProductPitched': ProductPitched,
     'PreferredPropertyStar': PreferredPropertyStar,
-    'MaritalStatus': MaritalStatus,
     'NumberOfTrips': NumberOfTrips,
     'Passport': 1 if Passport == "Yes" else 0,
-    'PitchSatisfactionScore': PitchSatisfactionScore,
     'OwnCar': 1 if OwnCar == "Yes" else 0,
-    'NumberOfChildrenVisited': NumberOfChildrenVisited,
+    'NumberOfChildrenVisiting': NumberOfChildrenVisiting,
+    'MonthlyIncome': MonthlyIncome,
+    'PitchSatisfactionScore': PitchSatisfactionScore,
+    'NumberOfFollowups': NumberOfFollowups,
+    'DurationOfPitch': DurationOfPitch,
+    'TypeofContact': TypeofContact,
+    'Occupation': Occupation,
+    'Gender': Gender,
+    'MaritalStatus': MaritalStatus,
     'Designation': Designation,
-    'MonthlyIncome': MonthlyIncome
+    'ProductPitched': ProductPitched
 }])
 
 # Set the classification threshold
@@ -63,8 +67,8 @@ classification_threshold = 0.45
 
 # Predict button
 if st.button("Predict"):
-    prob = model.predict_proba(input_data)[0,1]
-    pred = int(prob >= classification_threshold).astype(int)
-    result = "will purchase the travel package" if pred == 1 else "is unlikely to purchase"
+    prediction_proba = model.predict_proba(input_data)[0, 1]
+    prediction = (prediction_proba >= classification_threshold).astype(int)
+    result = "Opted For Tourism Package" if prediction == 1 else "Not Opted For Tourism Package"
     st.write(f"Prediction: Customer {result}")
 
