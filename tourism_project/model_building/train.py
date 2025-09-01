@@ -1,4 +1,3 @@
-# for data manipulation
 import pandas as pd
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import make_column_transformer
@@ -29,7 +28,7 @@ ytest_path = "hf://datasets/hkbindhu/Tourism-Package-Prediction/ytest.csv"
 
 Xtrain = pd.read_csv(Xtrain_path)
 Xtest = pd.read_csv(Xtest_path)
-ytrain = pd.read_csv(ytrain_path)
+ytrain = pd.read_csv(ytrain_path)  # squeeze() to convert dataframe to series if needed
 ytest = pd.read_csv(ytest_path)
 
 # Define numeric features from your dataset columns (adjust as per your dataset)
@@ -132,6 +131,8 @@ with mlflow.start_run():
     model_path = "best_tourism_prediction_model_v1.joblib"
     joblib.dump(best_model, model_path)
 
+    path_in_repo = os.path.basename(model_path)
+
     # Log model artifact in MLflow
     mlflow.log_artifact(model_path, artifact_path="model")
     print(f"Model saved as artifact at: {model_path}")
@@ -140,18 +141,10 @@ with mlflow.start_run():
     repo_id = "hkbindhu/Tourism-Package-Model"  
     repo_type = "model"
 
-    try:
-        api.repo_info(repo_id=repo_id, repo_type=repo_type)
-        print(f"Repo '{repo_id}' exists. Proceeding with upload.")
-    except RepositoryNotFoundError:
-        print(f"Repo '{repo_id}' not found. Creating new repo...")
-        create_repo(repo_id=repo_id, repo_type=repo_type, private=False)
-        print(f"Repo '{repo_id}' created.")
-
     api.upload_file(
-        path_or_fileobj=model_path,
-        path_in_repo=model_path,
-        repo_id=repo_id,
-        repo_type=repo_type,
+      path_or_fileobj=model_path,
+      path_in_repo=path_in_repo,  
+      repo_id=repo_id,
+      repo_type=repo_type,
     )
-    print(f"Model uploaded to Hugging Face repo '{repo_id}' successfully.")
+    print(f"✅ Model uploaded to Hugging Face repo '{repo_id}' at path '{path_in_repo}'")
