@@ -66,7 +66,7 @@ preprocessor = make_column_transformer(
 )
 
 # Define XGBoost model with scale_pos_weight for imbalance
-xgb_model = xgb.XGBClassifier(scale_pos_weight=class_weight, random_state=42, use_label_encoder=False, eval_metric="logloss")
+xgb_model = xgb.XGBClassifier(scale_pos_weight=class_weight, random_state=42, eval_metric="logloss")
 
 # Hyperparameter grid
 param_grid = {
